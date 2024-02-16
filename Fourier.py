@@ -5,7 +5,7 @@ import numpy as np
 sample_frequency = 50
 samples = 10
 
-df_rank = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+df_rank = [0] * 10
 dt_rank = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
 sr_n = len(df_rank)
 
@@ -16,9 +16,9 @@ y = []  # delta frequency (Hz)
 
 for _ in range(samples):
 
-    sampFreq, sound = wavfile.read(f'sample_{_+1}.wav')
+    sampFreq, sound = wavfile.read(f'Tapered/sample{_}.wav')
 
-    sound = sound / 2.0**15 # normalize amplitudes
+    sound = sound / 2.0**15  # normalize amplitudes
 
     duration = sound.shape[0] / sampFreq
 
@@ -53,7 +53,7 @@ for _ in range(samples):
 
     y.append(dx)
 
-    print(f"---sample {_ + 1}---")
+    print(f"---sample {_}---")
     print(f"sample frequency: {sampFreq}Hz")
     print(f"duration: {duration}s")
     print(f"dx: {dx}Hz")
@@ -75,6 +75,13 @@ for _ in range(samples):
 
 d_i = 0
 
+highest = 0
+for i in range(10, 0, -1):
+    for j in range(0, 10):
+        if y[j] > y[highest]:
+            highest = i
+
+
 for i in range(sr_n):
     d_i += (df_rank[i] - dt_rank[i])**2
 
@@ -85,14 +92,18 @@ print("Rs:", spearman_rank)
 
 x2 = np.linspace(0.000001, 1.000001)
 
-plt.figure("Results")
-plt.title(r"Uncertainty of Frequency ($\Delta$f) vs Uncertainty of Time ($\Delta$t)")
-plt.xlabel(r"$\Delta$t(s)")
-plt.ylabel(r"$\Delta$f(Hz)")
+plt.figure("Results", facecolor="#EEEEEE")
+plt.title(r"Uncertainty in Frequency for Sounds with Different Durations",
+          fontname="Times New Roman",
+          weight="bold",
+          fontsize=18,
+          pad=20)
+plt.xlabel(r"Sound Duration $\Delta$t(s)", weight="bold", bbox=dict(facecolor="#FBE4D5"))
+plt.ylabel(r"Uncertainty in Frequency $\Delta$f(Hz)", weight="bold", bbox=dict(facecolor="#D9E2F3"))
 plt.xlim(0, 1)
 plt.ylim(0, 50)
 plt.xticks(np.arange(0, 1.1, 0.1))
-plt.plot(x, y, 'og')
+plt.plot(x, y, 'or')
 plt.plot(x2, 4.0 / x2, label=r'$\frac{4}{\Delta t}$')
 
 plt.legend(fontsize="15")
