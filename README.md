@@ -1,0 +1,1 @@
+This code was used to generate the data for my diploma project. It generates a frequency analysis of different sound files through a fast fourier transform and uses the data to create an audio-analogy to the Heisenberg uncertainty principle
